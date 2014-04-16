@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>scouting by 3711</title>
+	<meta http-equiv="Content-Type" content="text/html;charset:utf-8" />
+	<link rel="stylesheet" href="css/scouting.css" />
+</head>
+<body>
+	<div id="team_header" class="header">
+		<h1>Team&nbsp;<input type="number" id="team_number" class="team_number" /></h1>
+		<h2><input type="text" id="team_name" class="team_name" /></h2>
+		<label for="quick_take">Quick Take:&nbsp</label>
+		<select id="quick_take">
+			<option value="unknown" default="true">Not scouted</option>
+			<option value="must">MUST pick</option>
+			<option value="fair">Fair pick</option>
+			<option value="poor">Poor pick</option>
+			<option value="nooo">DO NOT pick</option>
+		</select>
+		<button id="start_match">Start Match</button>	
+	</div>
+	<div id="robot_actions" class="attributes">
+		<p>
+			<h2>TeleOp</h2>
+		</p>
+		<p>
+			<label for="picks_up">Picks up</label>
+			<select id="picks_up">
+				<option value="unknown" default="true"></option>
+				<option value="fast">Fast</option>
+				<option value="eh">Eh</option>
+				<option value="no">Not at all</option>
+			</select>
+		</p>
+		<p>
+			<label for="kicks_out">Kicks out</label>
+			<select id="kicks_out">
+				<option value="unknown" default="true"></option>
+				<option value="fast">Fast</option>
+				<option value="eh">Eh</option>
+				<option value="no">Not at all</option>
+			</select>
+		</p>
+		<p>
+			<label for="shoots_hi">Shoots at high goal</label>
+			<select id="shoots_hi">
+				<option value="unknown" default="true"></option>
+				<option value="good">Solid</option>
+				<option value="eh">Sometimes</option>
+				<option value="no">Not at all</option>
+			</select>
+		</p>
+		<p>
+			<label for="shoots_lo">Shoots at low goal</label>
+			<select id="shoots_lo">
+				<option value="unknown" default="true"></option>
+				<option value="fast">Fast</option>
+				<option value="eh">Eh</option>
+				<option value="no">Not at all</option>
+			</select>
+		</p>
+		<p>
+			<label for="truss">Shoots over Truss</label>
+			<select id="truss">
+				<option value="unknown" default="true"></option>
+				<option value="to_hp">To Human Player</option>
+				<option value="to_field">To Field</option>
+				<option value="eh">Barely</option>
+				<option value="no">Not at all</option>
+			</select>
+		</p>
+		<p>
+			<label for="catching">Catches</label>
+			<select id="catching">
+				<option value="unknown" default="true"></option>
+				<option value="truss">Over Truss</option>
+				<option value="from_hp">From Human Player</option>
+				<option value="no">Not at all</option>
+			</select>
+		</p>
+		<p>
+			<label for="teamwork">Teamwork</label>
+			<select id="teamwork">
+				<option value="unknown" default="true"></option>
+				<option value="good">Good</option>
+				<option value="eh">Eh</option>
+				<option value="nooo">Gets in the way</option>
+			</select>
+		</p>
+		<p>
+			<h2>Autonomous</h2>
+		</p>
+		<p>
+			<input type="checkbox" id="auto_moves" /><label for="auto_moves">Moves into zone</label>
+		</p>
+		<p>
+			<label for="auto_shoots">Shoots</label>
+			<select id="auto_shoots">
+				<option value="unknown" default="true"></option>
+				<option value="no">No</option>
+				<option value="low">Low goal</option>
+				<option value="high">High goal</option>
+			</select>
+			<input type="checkbox" id="auto_misses" /><label for="auto_misses">Misses</label>
+		</p>
+		<p>
+			<input type="checkbox" id="auto_hot" /><label for="auto_hot">Hot goal</label>
+		</p>
+	</div>
+	<div id="robot_attributes" class="attributes">
+		<p>
+			<h2>General</h2>
+		</p>
+		<p>
+			<label>Driving Speed</label>
+			<input type="radio" id="drive_speed_fast" name="drive_speed" value="fast" /><label for="drive_speed_fast">Fast</label>
+			<input type="radio" id="drive_speed_med" name="drive_speed" value="med" /><label for="drive_speed_med">Medium</label>
+			<input type="radio" id="drive_speed_slow" name="drive_speed" value="slow" /><label for="drive_speed_slow">Slow</label>
+		</p>
+		<p>
+			<input type="checkbox" id="pushable" /><label for="pushable">Pushable</label>
+		</p>
+		<p>
+			<input type="checkbox" id="top_heavy" /><label for="top_heavy">Top-heavy</label>
+		</p>
+		<p>
+			<input type="checkbox" id="gets_in_way" /><label for="gets_in_way">Gets in the way</label>
+		</p>
+		<p>
+			<input type="checkbox" id="good_defense" /><label for="good_defense">Plays good defense</label>
+		</p>
+		<p>
+			<input type="checkbox" id="truss_to_hp" /><label for="truss_to_hp">Truss shot to Human Player</label>
+		</p>
+	</div>
+	<div id="team_footer" class="footer"></div>
+</body>
+</html>
