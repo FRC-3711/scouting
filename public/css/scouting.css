@@ -18,18 +18,17 @@ div.header {
 	padding: 5px;
 	margin: 5px;
 }
+div.actions {
+        width:50%;
+	float: left;
+}
 div.attributes {
 	width: 50%;
+	float: right;
 }
 div.footer {
 	clear: both;
 	text-align: center;
-}
-div#robot_actions {
-	float: left;
-}
-div#robot_attributes{
-	float: right;
 }
 input.team_number {
 	height: 21pt;
