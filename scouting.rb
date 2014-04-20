@@ -19,7 +19,23 @@ module Scouting
       field :type, type: String
 
       def self.quick_take
-        return where( :group => 'quick_take')
+        if (!where( :group => "quicktake" ).exists?)
+          #quick take is intended to be a standard field, and the group isn't made available on the admin page, so add it if it doesn't exist
+          new(
+            :_id => "quick_take",
+            :name => "Quick Take",
+            :group => "quicktake",
+            :type => "picklist",
+            :options => [ 
+              { :value => "must", :text => "MUST pick" }, 
+              { :value => "fair", :text => "Fair pick" },
+              { :value => "poor", :text => "Poor pick" },
+              { :value => "nooo", :text => "DO NOT pick" }
+            ]
+          ).save
+        end
+        quick_take = Attribute.where( :group => "quicktake" ).first
+        return quick_take
       end
 
       def self.autonomous
@@ -59,7 +75,6 @@ module Scouting
     class TeamN
       def get(id)
         @team = Team.where( :_id => id.to_i ).first
-        @quick_take = Attribute.where( :group => "quicktake" ).first
         @attributes = Attribute.all
         render :team
       end
@@ -69,7 +84,6 @@ module Scouting
       def get
         @edit = true
         @team = Team.new
-        @quick_take = Attribute.where( :group => "quicktake" ).first
         @attributes = Attribute.all
         render :team
       end
@@ -94,7 +108,6 @@ module Scouting
       def get(id)
         @team_number = id.to_i
         @team = Team.where( :_id => @team_number ).first_or_create
-        @quick_take = Attribute.where( :group => "quicktake" ).first
         @attributes = Attribute.all
         @edit = true
         render :team
@@ -105,7 +118,6 @@ module Scouting
       def get(id)
         @team_number = id.to_i
         @team = Team.where( :_id => @team_number ).first_or_create
-        @quick_take = Attribute.where( :group => "quicktake" ).first
         @attributes = Attribute.all
         @edit = true
         render :team
@@ -193,7 +205,7 @@ module Scouting
                @team.name
              end
            end
-           attribute_input(@quick_take, @team, edit)
+           attribute_input(@attributes.quick_take, @team, edit)
          end
     end
     
