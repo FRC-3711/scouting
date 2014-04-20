@@ -11,4 +11,4 @@ production:
       hosts:
         - oceanic.mongohq.com:10056/app23124270
       username: frc-scouting
-      password: '3711'
+      password: mt4d@ms
