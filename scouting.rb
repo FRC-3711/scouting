@@ -6,7 +6,6 @@ Camping.goes :Scouting
 module Scouting
   def self.create
     Mongoid.load!('./mongoid.yml')
-    puts Mongoid.sessions
   end
   
   module Models
@@ -74,9 +73,14 @@ module Scouting
     
     class TeamN
       def get(id)
-        @team = Team.where( :_id => id.to_i ).first
+        @team_number = id.to_i
+        @team = Team.where( :_id => @team_number ).first
         @attributes = Attribute.all
-        render :team
+        if @team
+          render :team
+        else
+          redirect TeamNEdit, @team_number
+        end
       end
     end
     
@@ -107,7 +111,10 @@ module Scouting
     class TeamNEdit
       def get(id)
         @team_number = id.to_i
-        @team = Team.where( :_id => @team_number ).first_or_create
+        @team = Team.where( :_id => @team_number ).first_or_initialize
+        if (!@team._id)
+          @team._id = @team_number
+        end
         @attributes = Attribute.all
         @edit = true
         render :team
@@ -117,7 +124,10 @@ module Scouting
     class TeamEditN
       def get(id)
         @team_number = id.to_i
-        @team = Team.where( :_id => @team_number ).first_or_create
+        @team = Team.where( :_id => @team_number ).first_or_initialize
+        if (!@team._id)
+          @team._id = @team_number
+        end
         @attributes = Attribute.all
         @edit = true
         render :team
@@ -163,13 +173,18 @@ module Scouting
     end
     
     def index
-      @teams.each do |t|
-              p do
-                a :href => R(TeamN, t._id) do t._id end
-                text " "
-                a :href => R(TeamNEdit, t._id) do "Edit" end
+      if (@teams)
+        @teams.each do |t|
+                p do
+                  a :href => R(TeamN, t._id) do t._id end
+                  text " "
+                  a :href => R(TeamNEdit, t._id) do "Edit" end
+                end
               end
-            end
+      end
+      p do
+        a :href => R(TeamEdit) do "Add New" end
+      end
     end
 
     def team
@@ -243,6 +258,8 @@ module Scouting
       div.team_footer!.footer do
            if edit
              input :type => :submit, :value => "Save"
+           else
+             a :href => R(TeamNEdit, @team._id) do "Edit" end
            end
          end
     end
