@@ -9,6 +9,6 @@ production:
     default:
       database: teams
       hosts:
-        - mongodb://oceanic.mongohq.com:10056/app23124270
+        - oceanic.mongohq.com:10056/app23124270
       username: frc-scouting
       password: mt4d@ms
