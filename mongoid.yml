@@ -5,10 +5,4 @@ development:
       hosts:
         - localhost:27017
 production:
-  sessions:
-    default:
-      database: teams
-      hosts:
-        - oceanic.mongohq.com:10056/app23124270
-      username: frc-scouting
-      password: mt4d@ms
+  uri: <%= ENV['MONGOHQ_URL'] %>
