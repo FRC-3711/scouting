@@ -5,7 +5,7 @@ Camping.goes :Scouting
 
 module Scouting
   def self.create
-    Mongoid.load!('./mongoid.yml')
+    Mongoid.load!('mongoid.yml')
   end
   
   module Models
@@ -66,7 +66,7 @@ module Scouting
   module Controllers
     class Index
       def get
-        @teams = Team.count > 0 ? Team.all : nil
+#        @teams = Team.count > 0 ? Team.all.asc( :_id ) : nil
         render :index
       end
     end
@@ -165,59 +165,69 @@ module Scouting
       html do
         head do
           title "scouting by 3711"
+#          meta :name => "viewport", :content => "width=device-width, initial-scale=1.0, user-scalable=no"
           link :rel => "stylesheet", :type => "text/css", :href => "/css/scouting.css"
-          link :rel => "stylesheet", :type => "text/css", :media => "handheld", :href => "/css/scouting-mobile.css"
+#          link :rel => "stylesheet", :type => "text/css", :href => "/css/scouting-mobile.css"
+          script :src => "js/jquery-2.1.0.js", :type => "text/javascript"
+          script :src => "js/underscore.js", :type => "text/javascript"
+          script :src => "js/backbone.js", :type => "text/javascript"
+          script :src => "js/backbone-faux-server.js", :type => "text/javascript"
+          script :src => "js/faux-server.js", :type => "text/javascript"
+          script :src => "js/main.js", :type => "text/javascript"
         end
         body { self << yield }
       end
     end
     
+#    def index
+#      if (@teams)
+#        @teams.each do |t|
+#                p do
+#                  a :href => R(TeamN, t._id) do t._id end
+#                  text " "
+#                  a :href => R(TeamNEdit, t._id) do "Edit" end
+#                end
+#              end
+#      end
+#      p do
+#        a :href => R(TeamEdit) do "Add New" end
+#      end
+#    end
+
     def index
-      if (@teams)
-        @teams.each do |t|
-                p do
-                  a :href => R(TeamN, t._id) do t._id end
-                  text " "
-                  a :href => R(TeamNEdit, t._id) do "Edit" end
-                end
-              end
-      end
-      p do
-        a :href => R(TeamEdit) do "Add New" end
-      end
+      div :id => "backbone-app" do "Loading..." end
+      script :id => "team-list-template", :type => "text/template" do
+                                            backbone_team_list_template()
+                                          end
+      script :id => "team-template", :type => "text/template" do
+                                       backbone_team_template()
+                                     end
     end
 
     def team
-      if @edit
-        form :action => R(TeamEdit), 
-        :method => :post do
-                  team_header(@edit)
-                  team_actions(@edit)
-                  team_attributes(@edit)
-                  team_footer(@edit)
-                end
-      else
-        team_header(@edit)
-        team_actions(@edit)
-        team_attributes(@edit)
-        team_footer(@edit)
-      end
+      form :action => R(TeamEdit), 
+      :method => :post do
+                team_header(@edit)
+                team_actions(@edit)
+                team_attributes(@edit)
+                team_footer(@edit)
+              end
     end
     
     def team_header(edit)
+      edit_s = edit ? 'true' : 'false'
       div.team_header!.header do
            h1 do
-             if edit
-               "Team&nbsp;" + input.team_number!.team_number( :type => "number", :name => "team_number", :value => @team._id )
-             else
-               "Team #{@team._id}"
-             end
+             span :class => "data_item edit_#{edit_s}" do
+                   text "Team "
+                   input.team_number!( :class => "team_number attr_input", :type => "number", :name => "team_number", :value => @team._id)
+                   span.attr_value @team._id
+                 end
            end
            h2 do
-             if edit
-               input.team_name!.team_name( :type => "text", :name => "team_name", :value => @team.name )
-             else
-               @team.name
+             span :class => "data_item edit_#{edit_s}" do
+               input.team_name!( :class => "team_name attr_input", :type => "text", :name => "team_name", :value => @team.name )
+               span.attr_value @team.name
              end
            end
            attribute_input(@attributes.quick_take, @team, edit)
@@ -318,65 +328,73 @@ module Scouting
   end
 
   module Helpers
+    def backbone_team_template
+      return "<div id='team-header' class='header'>\r\n\t<h1>Team <%= id %></h1>\r\n\t<h2><%= name %></h2>\r\n\tQuick Take: <%= quick_take %>\r\n</div>"
+    end
+
+    def backbone_team_list_template
+      return "<% _.each(data, function(item) { %>\r\n\t<p>\r\n\t\t<a href='teams/<%= item.id %>'><%= item.id %>: <%= item.name %></a>\r\n\t\t<a href='teams/<%= item.id %>/edit'>Edit</a>\r\n\t</p>\r\n<% }); %>\r\n<p>\r\n\t<a href='teams/edit'>Add New</a>\r\n</p>"
+    end
+
     def attribute_input(at, team, edit)
-      if edit
-        case at.type
-        when 'picklist'
-          label :for => at._id do "#{at.name}&nbsp;" end
-          select :id => at._id, :name => at._id do
-                            option :value => "unknown", :default => "true"
-                            at.options.each do |opt|
-                                        if (team.attrs[at._id] == opt['value'])
-                                          option :value => opt['value'], :selected => 'true' do opt['text'] end
-                                        else
-                                          option :value => opt['value'] do opt['text'] end
-                                        end
-                                      end
+      edit_s = edit ? 'true' : 'false'
+      span :class => "data_item edit_#{edit_s}" do
+            if ( at.type == 'checkbox' )
+              if (team.attrs[at._id] == 'yes')
+                input.attr_input :type => 'checkbox', :value => 'yes', :id => at._id, :name => at._id, :checked => 'true'
+              else
+                input.attr_input :type => 'checkbox', :value => 'yes', :id => at._id, :name => at._id
+              end
+            end
+            label :for => at._id do "#{at.name}: " end
+            if ( at.type != 'checkbox' )
+              case at.type
+              when 'picklist'
+                select.attr_input :id => at._id, :name => at._id do
+                                                              option :value => "unknown", :default => "true"
+                                                              at.options.each do |opt|
+                                                                          if (team.attrs[at._id] == opt['value'])
+                                                                            option :value => opt['value'], :selected => 'true' do opt['text'] end
+                                                                          else
+                                                                            option :value => opt['value'] do opt['text'] end
+                                                                          end
+                                                                        end
+                                                            end
+              when 'radio'
+                at.options.each do |opt|
+                            if (team.attrs[at._id] == opt['value'])
+                              input.attr_input :type => "radio",
+                              :id => "#{at._id}_#{opt['value']}", 
+                              :name => at._id,
+                              :value => opt['value'],
+                              :checked => 'true'
+                              label :for => "#{at._id}_#{opt['value']}" do opt['text'] end
+                            else
+                              input.attr_input :type => "radio", 
+                              :id => "#{at._id}_#{opt['value']}", 
+                              :name => at._id,
+                              :value => opt['value']
+                              label :for => "#{at._id}_#{opt['value']}" do opt['text'] end
+                            end
                           end
-        when 'radio'
-          label at.name
-          at.options.each do |opt|
-                      if (team.attrs[at._id] == opt['value'])
-                        input :type => "radio", 
-                        :id => "#{at._id}_#{opt['value']}", 
-                        :name => at._id,
-                        :value => opt['value'],
-                        :checked => 'true'
-                        label :for => "#{at._id}_#{opt['value']}" do opt['text'] end
-                      else
-                        input :type => "radio", 
-                        :id => "#{at._id}_#{opt['value']}", 
-                        :name => at._id,
-                        :value => opt['value']
-                        label :for => "#{at._id}_#{opt['value']}" do opt['text'] end
-                      end
-                    end
-        when 'checkbox'
-          if (team.attrs[at._id] == 'yes')
-            input :type => 'checkbox', :value => 'yes', :id => at._id, :name => at._id, :checked => 'true'
-          else
-            input :type => 'checkbox', :value => 'yes', :id => at._id, :name => at._id
-          end
-          label :for => at._id do at.name end
-        else
-          label :for => at._id do "#{at.name}&nbsp;" end
-          input :type => 'text', :id => at._id, :name => at._id, :value => team.attrs[at._id]
-        end
-      else
-        value = ''
-        if (at.type == 'string')
-          value = team.attrs[at._id]
-        elsif (at.type == 'checkbox')
-          value = team.attrs[at._id] == 'yes' ? 'yes' : 'no'
-        else
-          at.options.each do |opt|
-                      if opt['value'] == team.attrs[at._id]
-                        value = opt['text']
-                        break
-                      end
-                    end
-        end
-        text "#{at.name}: #{value}"
+              else
+                input.attr_input :type => 'text', :id => at._id, :name => at._id, :value => team.attrs[at._id]
+              end
+            end
+            value = ''
+            if (at.type == 'string')
+              value = team.attrs[at._id]
+            elsif (at.type == 'checkbox')
+              value = team.attrs[at._id] == 'yes' ? 'Yes' : 'No'
+            else
+              at.options.each do |opt|
+                          if opt['value'] == team.attrs[at._id]
+                            value = opt['text']
+                            break
+                          end
+                        end
+            end
+            span.attr_value "#{value}"
       end
     end
   end
